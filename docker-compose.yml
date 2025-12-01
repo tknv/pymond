@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: extreme_postgres
+    environment:
+      POSTGRES_DB: extreme_aps
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  exporter:
+    build: .
+    container_name: extreme_exporter
+    command: python exporter.py
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: extreme_aps
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    volumes:
+      - ./targets.csv:/app/targets.csv:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build: .
+    container_name: extreme_web
+    command: python app.py
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: extreme_aps
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SECRET_KEY: change-this-secret-key-in-production
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
