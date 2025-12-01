@@ -1,6 +1,14 @@
-# Extreme AP Dashboard - PostgreSQL Edition
+# pymond 
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tknv/xccmond)  
 
 A lightweight Python-based monitoring solution for Extreme Networks Access Points using PostgreSQL instead of Prometheus/Grafana for better performance with 20,000+ APs.
+
+Dashboard:
+![dashboard](image.png)
+
+Detail:
+![detail](image-1.png) 
 
 ## Features
 
@@ -54,8 +62,8 @@ docker-compose down -v
 
 Open your browser and navigate to:
 - **URL**: http://localhost:8080
-- **Default Username**: admin
-- **Default Password**: admin
+- **Default Username**: adminuser
+- **Default Password**: adminpass
 
 ### 5. Appendix
 
