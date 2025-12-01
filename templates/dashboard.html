@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #f5f5f5;
+        color: #333;
+      }
+
+      .header {
+        background: white;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 16px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #5b4e9f;
+      }
+
+      .header-right {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .user-info {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .logout-btn {
+        padding: 8px 16px;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s;
+      }
+
+      .logout-btn:hover {
+        background: #5b4e9f;
+        color: white;
+        border-color: #5b4e9f;
+      }
+
+      .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .search-bar {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .section .search-bar {
+        margin-top: 16px;
+        margin-bottom: 16px;
+      }
+
+      .search-bar form {
+        display: flex;
+        gap: 12px;
+      }
+
+      .search-bar input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .search-bar input:focus {
+        border-color: #5b4e9f;
+      }
+
+      .search-bar button {
+        padding: 12px 24px;
+        background: #5b4e9f;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      .search-bar button:hover {
+        background: #4a3d8c;
+      }
+
+      .clear-btn {
+        background: #f0f0f0 !important;
+        color: #666 !important;
+      }
+
+      .clear-btn:hover {
+        background: #e0e0e0 !important;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .stat-card .label {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .stat-card .value {
+        font-size: 32px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .stat-card.success .value {
+        color: #28a745;
+      }
+
+      .stat-card.danger .value {
+        color: #dc3545;
+      }
+
+      .section {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .section h2 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: #666;
+        border-bottom: 2px solid #e0e0e0;
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+
+      th:hover {
+        background: #e9ecef;
+      }
+
+      th.sortable::after {
+        content: " ⇅";
+        opacity: 0.3;
+        font-size: 11px;
+      }
+
+      th.sorted-asc::after {
+        content: " ▲";
+        opacity: 1;
+        color: #5b4e9f;
+      }
+
+      th.sorted-desc::after {
+        content: " ▼";
+        opacity: 1;
+        color: #5b4e9f;
+      }
+
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+      }
+
+      tr:hover {
+        background: #f8f9fa;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-success {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-danger {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .link {
+        color: #5b4e9f;
+        text-decoration: none;
+      }
+
+      .link:hover {
+        text-decoration: underline;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .pagination a,
+      .pagination span {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #666;
+      }
+
+      .pagination a:hover {
+        background: #f0f0f0;
+      }
+
+      .pagination .active {
+        background: #5b4e9f;
+        color: white;
+        border-color: #5b4e9f;
+      }
+
+      .no-data {
+        text-align: center;
+        padding: 60px 40px;
+        color: #999;
+      }
+
+      .no-data-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+      }
+
+      .no-data h3 {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .no-data p {
+        font-size: 14px;
+        color: #999;
+      }
+
+      .fail-reason {
+        max-width: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* Additional styles for clickable rows/cells */
+      .clickable-cell {
+        cursor: pointer;
+        color: #5b4e9f;
+      }
+
+      .clickable-cell:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Dashboard</h1>
+      <div class="header-right">
+        <span class="user-info">Logged in as: {{ session.username }}</span>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Error Message -->
+      {% if error %}
+      <div
+        style="
+          background: #fff3cd;
+          border: 1px solid #ffc107;
+          color: #856404;
+          padding: 16px;
+          border-radius: 8px;
+          margin-bottom: 24px;
+        "
+      >
+        <strong>Warning:</strong> {{ error }}
+      </div>
+      {% endif %}
+
+      <!-- Statistics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">Total Controllers</div>
+          <div class="value">{{ total_controllers }}</div>
+        </div>
+        <div
+          class="stat-card {% if failed_controllers > 0 %}danger{% else %}success{% endif %}"
+        >
+          <div class="label">Failed Controllers</div>
+          <div class="value">{{ failed_controllers }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Total APs</div>
+          <div class="value">{{ total_aps }}</div>
+        </div>
+        <div
+          class="stat-card {% if failed_aps > 0 %}danger{% else %}success{% endif %}"
+        >
+          <div class="label">Failed APs (Not InService)</div>
+          <div class="value">{{ failed_aps }}</div>
+        </div>
+      </div>
+
+      <!-- Failed Controllers -->
+      {% if failed_controllers > 0 %}
+      <div class="section">
+        <h2>Failed Controllers</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Controller IP</th>
+              <th>Host Name</th>
+              <th>Fail Reason</th>
+              <th>First Failure Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for controller in failed_controllers_list %}
+            <tr>
+              <td>
+                <a
+                  href="https://{{ controller.target_ip }}:5825"
+                  target="_blank"
+                  class="link"
+                  >{{ controller.target_ip }}</a
+                >
+              </td>
+              <td>{{ controller.host_name }}</td>
+              <td class="fail-reason" title="{{ controller.fail_reason }}">
+                {{ controller.fail_reason }}
+              </td>
+              <td>{{ controller.first_failure_time | format_timestamp }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- Controller List -->
+      <div class="section">
+        <h2>Controller List {% if ctrl_search %}(Search Results){% endif %}</h2>
+        <div class="search-bar">
+          <form method="get" action="{{ url_for('dashboard') }}">
+            <input
+              type="text"
+              name="ctrl_search"
+              placeholder="Search controllers by IP or hostname..."
+              value="{{ ctrl_search }}"
+            />
+            <button type="submit">Search</button>
+            {% if ctrl_search %}
+            <a href="{{ url_for('dashboard') }}" style="text-decoration: none"
+              ><button type="button" class="clear-btn">Clear</button></a
+            >
+            {% endif %}
+          </form>
+        </div>
+        {% if all_controllers %}
+        <table>
+          <thead>
+            <tr>
+              <th
+                class="sortable {% if ctrl_sort == 'status' %}sorted-{{ ctrl_order }}{% endif %}"
+                onclick="window.location.href='?ctrl_sort=status&ctrl_order={{ 'desc' if ctrl_order == 'asc' and ctrl_sort == 'status' else 'asc' }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}'"
+              >
+                Status
+              </th>
+              <th
+                class="sortable {% if ctrl_sort == 'target_ip' %}sorted-{{ ctrl_order }}{% endif %}"
+                onclick="window.location.href='?ctrl_sort=target_ip&ctrl_order={{ 'desc' if ctrl_order == 'asc' and ctrl_sort == 'target_ip' else 'asc' }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}'"
+              >
+                Controller IP
+              </th>
+              <th
+                class="sortable {% if ctrl_sort == 'host_name' %}sorted-{{ ctrl_order }}{% endif %}"
+                onclick="window.location.href='?ctrl_sort=host_name&ctrl_order={{ 'desc' if ctrl_order == 'asc' and ctrl_sort == 'host_name' else 'asc' }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}'"
+              >
+                Host Name
+              </th>
+              <th
+                class="sortable {% if ctrl_sort == 'ap_count' %}sorted-{{ ctrl_order }}{% endif %}"
+                onclick="window.location.href='?ctrl_sort=ap_count&ctrl_order={{ 'desc' if ctrl_order == 'asc' and ctrl_sort == 'ap_count' else 'asc' }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}'"
+              >
+                AP Count
+              </th>
+              <th>Fail Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for controller in all_controllers %}
+            <tr>
+              <td>
+                {% if controller.status == 1 %}
+                <span class="status-badge status-success">InService</span>
+                {% else %}
+                <span class="status-badge status-danger">Failed</span>
+                {% endif %}
+              </td>
+              <td>
+                <a
+                  href="https://{{ controller.target_ip }}:5825"
+                  target="_blank"
+                  class="link"
+                  >{{ controller.target_ip }}</a
+                >
+              </td>
+              <td>{{ controller.host_name }}</td>
+              <td>{{ controller.ap_count }}</td>
+              <td class="fail-reason" title="{{ controller.fail_reason }}">
+                {{ controller.fail_reason or '-' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if total_ctrl_pages > 1 %}
+        <div class="pagination">
+          {% if ctrl_page > 1 %}
+          <a
+            href="?ctrl_page={{ ctrl_page - 1 }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}"
+            >Previous</a
+          >
+          {% endif %} {% for p in range(1, total_ctrl_pages + 1) %} {% if p ==
+          ctrl_page %}
+          <span class="active">{{ p }}</span>
+          {% elif p == 1 or p == total_ctrl_pages or (p >= ctrl_page - 2 and p
+          <= ctrl_page + 2) %}
+          <a
+            href="?ctrl_page={{ p }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}"
+            >{{ p }}</a
+          >
+          {% elif p == ctrl_page - 3 or p == ctrl_page + 3 %}
+          <span>...</span>
+          {% endif %} {% endfor %} {% if ctrl_page < total_ctrl_pages %}
+          <a
+            href="?ctrl_page={{ ctrl_page + 1 }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}"
+            >Next</a
+          >
+          {% endif %}
+        </div>
+        {% endif %} {% else %}
+        <div class="no-data">
+          <div class="no-data-icon">🌐</div>
+          <h3>No Controllers Found</h3>
+          <p>
+            {% if ctrl_search %}No results for "{{ ctrl_search }}".{% else
+            %}Waiting for the exporter to collect controller data. This may take
+            up to 10 minutes.{% endif %}
+          </p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- AP Status List -->
+      <div class="section">
+        <h2>AP Status List {% if ap_search %}(Search Results){% endif %}</h2>
+        <div class="search-bar">
+          <form method="get" action="{{ url_for('dashboard') }}">
+            <input
+              type="text"
+              name="ap_search"
+              placeholder="Search APs by hostname, IP, MAC, or serial..."
+              value="{{ ap_search }}"
+            />
+            <button type="submit">Search</button>
+            {% if ap_search %}
+            <a href="{{ url_for('dashboard') }}" style="text-decoration: none"
+              ><button type="button" class="clear-btn">Clear</button></a
+            >
+            {% endif %}
+          </form>
+        </div>
+
+        {% if all_aps and all_aps|length > 0 %}
+        <table>
+          <thead>
+            <tr>
+              <th
+                class="sortable {% if ap_sort == 'status' %}sorted-{{ ap_order }}{% endif %}"
+                onclick="window.location.href='?ap_sort=status&ap_order={{ 'desc' if ap_order == 'asc' and ap_sort == 'status' else 'asc' }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}'"
+              >
+                Status
+              </th>
+              <th
+                class="sortable {% if ap_sort == 'hostname' %}sorted-{{ ap_order }}{% endif %}"
+                onclick="window.location.href='?ap_sort=hostname&ap_order={{ 'desc' if ap_order == 'asc' and ap_sort == 'hostname' else 'asc' }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}'"
+              >
+                Hostname
+              </th>
+              <th
+                class="sortable {% if ap_sort == 'serial_number' %}sorted-{{ ap_order }}{% endif %}"
+                onclick="window.location.href='?ap_sort=serial_number&ap_order={{ 'desc' if ap_order == 'asc' and ap_sort == 'serial_number' else 'asc' }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}'"
+              >
+                Serial Number
+              </th>
+              <th
+                class="sortable {% if ap_sort == 'ip_address' %}sorted-{{ ap_order }}{% endif %}"
+                onclick="window.location.href='?ap_sort=ip_address&ap_order={{ 'desc' if ap_order == 'asc' and ap_sort == 'ip_address' else 'asc' }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}'"
+              >
+                AP IP Address
+              </th>
+              <th
+                class="sortable {% if ap_sort == 'target_ip' %}sorted-{{ ap_order }}{% endif %}"
+                onclick="window.location.href='?ap_sort=target_ip&ap_order={{ 'desc' if ap_order == 'asc' and ap_sort == 'target_ip' else 'asc' }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}'"
+              >
+                Controller IP
+              </th>
+              <th
+                class="sortable {% if ap_sort == 'host_site' %}sorted-{{ ap_order }}{% endif %}"
+                onclick="window.location.href='?ap_sort=host_site&ap_order={{ 'desc' if ap_order == 'asc' and ap_sort == 'host_site' else 'asc' }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}'"
+              >
+                Site
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ap in all_aps %}
+            <tr>
+              <td>
+                {% if ap.status == 'InService' %}
+                <span class="status-badge status-success">InService</span>
+                {% else %}
+                <span class="status-badge status-danger"
+                  >{{ ap.status or 'Unknown'}}</span
+                >
+                {% endif %}
+              </td>
+              <td>
+                {% if ap.serial_number %}
+                <a
+                  href="{{ url_for('ap_details', serial_number=ap.serial_number) }}"
+                  class="link clickable-cell"
+                  title="Click to view AP details"
+                >
+                  {{ ap.hostname or 'N/A' }}
+                </a>
+                {% else %} {{ ap.hostname or 'N/A' }} {% endif %}
+              </td>
+              <td>{{ ap.serial_number or 'N/A' }}</td>
+              <td>{{ ap.ip_address or 'N/A' }}</td>
+              <td>{{ ap.target_ip or 'N/A' }}</td>
+              <td>{{ ap.host_site or 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if total_ap_pages > 1 %}
+        <div class="pagination">
+          {% if ap_page > 1 %}
+          <a
+            href="?ap_page={{ ap_page - 1 }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}"
+            >Previous</a
+          >
+          {% endif %} {% for p in range(1, total_ap_pages + 1) %} {% if p ==
+          ap_page %}
+          <span class="active">{{ p }}</span>
+          {% elif p == 1 or p == total_ap_pages or (p >= ap_page - 2 and p <=
+          ap_page + 2) %}
+          <a
+            href="?ap_page={{ p }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}"
+            >{{ p }}</a
+          >
+          {% elif p == ap_page - 3 or p == ap_page + 3 %}
+          <span>...</span>
+          {% endif %} {% endfor %} {% if ap_page < total_ap_pages %}
+          <a
+            href="?ap_page={{ ap_page + 1 }}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}"
+            >Next</a
+          >
+          {% endif %}
+        </div>
+        {% endif %} {% else %}
+        <div class="no-data">
+          <div class="no-data-icon">📡</div>
+          <h3>No Access Points Found</h3>
+          <p>
+            {% if ap_search %}No results for "{{ ap_search }}". Try a different
+            search term.{% else %}The exporter is collecting data. Please wait a
+            few minutes and refresh the page.{% endif %}
+          </p>
+          <p style="margin-top: 10px; font-size: 12px">
+            Debug: Total APs in DB = {{ total_aps }}, Failed APs = {{ failed_aps
+            }}
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <script>
+      // Auto-refresh stats every 5 minutes
+      setInterval(function () {
+        fetch("/api/stats")
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.error) {
+              document.querySelector(
+                ".stats-grid .stat-card:nth-child(1) .value"
+              ).textContent = data.total_controllers;
+              document.querySelector(
+                ".stats-grid .stat-card:nth-child(2) .value"
+              ).textContent = data.failed_controllers;
+              document.querySelector(
+                ".stats-grid .stat-card:nth-child(3) .value"
+              ).textContent = data.total_aps;
+              document.querySelector(
+                ".stats-grid .stat-card:nth-child(4) .value"
+              ).textContent = data.failed_aps;
+            }
+          })
+          .catch((error) => console.error("Error fetching stats:", error));
+      }, 300000); // 5 minutes
+    </script>
+  </body>
+</html>

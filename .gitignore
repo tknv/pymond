@@ -277,11 +277,11 @@ __marimo__/
 # Don't track binary image files
 *.bmp
 *.jpg
-*.png
+# *.png
 
 # Don't track common export formats from Markdown
 *.doc?
-*.htm?
+# *.htm?
 *.pdf
 
 # Don't track common program output logs
