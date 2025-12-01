@@ -47,8 +47,8 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       SECRET_KEY: change-this-secret-key-in-production
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: admin
+      ADMIN_USERNAME: adminuser
+      ADMIN_PASSWORD: adminpass
     ports:
       - "8080:8080"
     depends_on:

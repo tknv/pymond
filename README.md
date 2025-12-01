@@ -57,6 +57,43 @@ Open your browser and navigate to:
 - **Default Username**: admin
 - **Default Password**: admin
 
+### 5. Appendix
+
+```bash
+# clean all docker data
+docker container stop $(docker container ls -aq) && docker container rm $(docker container ls -aq) && docker rmi -f $(docker images -aq) && docker volume rm $(docker volume ls -q) && docker network rm $(docker network ls | awk '{print $1}' | grep -v 'ID\|bridge\|host\|none')
+
+# check data in db
+docker exec -it extreme_postgres psql -U postgres -d extreme_aps -c "SELECT COUNT(*) FROM controllers;"
+docker exec -it extreme_postgres psql -U postgres -d extreme_aps -c "SELECT COUNT(*) FROM access_points;"
+docker exec -it extreme_postgres psql -U postgres -d extreme_aps -c "SELECT * FROM controllers;"
+docker exec -it extreme_postgres psql -U postgres -d extreme_aps -c "SELECT hostname, serial_number, status FROM access_points LIMIT 5;"
+
+# Exporter settings in exporter.py
+POLLING_INTERVAL = 600  # 10 minutes
+TOKEN_LIFETIME_MINUTES = 110
+REQUEST_TIMEOUT = 10
+MAX_WORKERS = 30
+CSV_FILE_PATH = 'targets.csv'
+```
+
+#### When 404 error pulling data while docker build  
+
+Sometimes in some region docker.io has some issue.  
+
+Set mirror.  
+
+```bash
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<'EOF'
+{
+ "registry-mirrors": ["https://mirror.gcr.io"]
+}
+EOF
+
+sudo systemctl restart docker
+```
+
 ## Manual Installation
 
 ### 1. Install PostgreSQL
