@@ -1,6 +1,6 @@
 # pymond 
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tknv/xccmond)  
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tknv/pymond)  
 
 A lightweight Python-based monitoring solution for Extreme Networks Access Points using PostgreSQL instead of Prometheus/Grafana for better performance with 20,000+ APs.
 
