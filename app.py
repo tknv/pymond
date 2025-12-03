@@ -91,18 +91,32 @@ def dashboard():
         result = cur.fetchone()
         failed_aps = result['failed'] if result else 0
         
-        # Get failed controllers
+        # Failed Controllers Pagination
+        failed_ctrl_page = request.args.get('failed_ctrl_page', 1, type=int)
+        failed_ctrl_per_page = 10
+        total_failed_ctrl_pages = max(1, (failed_controllers + failed_ctrl_per_page - 1) // failed_ctrl_per_page)
+
+        # Validate page number
+        if failed_ctrl_page < 1:
+            failed_ctrl_page = 1
+        elif failed_ctrl_page > total_failed_ctrl_pages:
+            failed_ctrl_page = total_failed_ctrl_pages
+
+        failed_ctrl_offset = (failed_ctrl_page - 1) * failed_ctrl_per_page
+
+        # Get failed controllers with pagination
         cur.execute("""
             SELECT target_ip, host_name, fail_reason, first_failure_time
             FROM controllers 
             WHERE status = 0
             ORDER BY target_ip
-        """)
+            LIMIT %s OFFSET %s
+        """, (failed_ctrl_per_page, failed_ctrl_offset))
         failed_controllers_list = cur.fetchall() or []
         
         # Controller Pagination & Search
         ctrl_page = request.args.get('ctrl_page', 1, type=int)
-        ctrl_per_page = 10
+        ctrl_per_page = 20
         ctrl_offset = (ctrl_page - 1) * ctrl_per_page
         ctrl_search = request.args.get('ctrl_search', '').strip()
         ctrl_sort = request.args.get('ctrl_sort', 'target_ip')
@@ -151,7 +165,7 @@ def dashboard():
         
         # AP List with pagination, search, and sort - FIXED
         ap_page = request.args.get('ap_page', 1, type=int)
-        ap_per_page = 30
+        ap_per_page = 50
         ap_offset = (ap_page - 1) * ap_per_page
         ap_search = request.args.get('ap_search', '').strip()
         ap_sort = request.args.get('ap_sort', 'status')
@@ -225,6 +239,9 @@ def dashboard():
                              total_aps=total_aps,
                              failed_aps=failed_aps,
                              failed_controllers_list=failed_controllers_list,
+                             failed_ctrl_page=failed_ctrl_page,
+                             total_failed_ctrl_pages=total_failed_ctrl_pages,
+                             failed_ctrl_per_page=failed_ctrl_per_page,
                              all_controllers=all_controllers,
                              all_aps=all_aps,
                              ctrl_page=ctrl_page,

@@ -305,3 +305,6 @@ __marimo__/
 
 # Don't track continuous integration virtual environments
 /continuous-integration/venv/
+
+test.json
+test.sh

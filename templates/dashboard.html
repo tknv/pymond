@@ -369,7 +369,11 @@
       <!-- Failed Controllers -->
       {% if failed_controllers > 0 %}
       <div class="section">
-        <h2>Failed Controllers</h2>
+        <h2>
+          Failed Controllers {% if failed_controllers > failed_ctrl_per_page %}
+          (Page {{ failed_ctrl_page }} of {{ total_failed_ctrl_pages }}) {%
+          endif %}
+        </h2>
         <table>
           <thead>
             <tr>
@@ -387,8 +391,9 @@
                   href="https://{{ controller.target_ip }}:5825"
                   target="_blank"
                   class="link"
-                  >{{ controller.target_ip }}</a
                 >
+                  {{ controller.target_ip }}
+                </a>
               </td>
               <td>{{ controller.host_name }}</td>
               <td class="fail-reason" title="{{ controller.fail_reason }}">
@@ -399,6 +404,35 @@
             {% endfor %}
           </tbody>
         </table>
+
+        <!-- Pagination for Failed Controllers -->
+        {% if total_failed_ctrl_pages > 1 %}
+        <div class="pagination">
+          {% if failed_ctrl_page > 1 %}
+          <a
+            href="?failed_ctrl_page={{ failed_ctrl_page - 1 }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}{% if ctrl_sort %}&ctrl_sort={{ ctrl_sort }}{% endif %}{% if ctrl_order %}&ctrl_order={{ ctrl_order }}{% endif %}{% if ctrl_page %}&ctrl_page={{ ctrl_page }}{% endif %}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}{% if ap_sort %}&ap_sort={{ ap_sort }}{% endif %}{% if ap_order %}&ap_order={{ ap_order }}{% endif %}{% if ap_page %}&ap_page={{ ap_page }}{% endif %}"
+            >Previous</a
+          >
+          {% endif %} {% for p in range(1, total_failed_ctrl_pages + 1) %} {% if
+          p == failed_ctrl_page %}
+          <span class="active">{{ p }}</span>
+          {% elif p == 1 or p == total_failed_ctrl_pages or (p >=
+          failed_ctrl_page - 2 and p <= failed_ctrl_page + 2) %}
+          <a
+            href="?failed_ctrl_page={{ p }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}{% if ctrl_sort %}&ctrl_sort={{ ctrl_sort }}{% endif %}{% if ctrl_order %}&ctrl_order={{ ctrl_order }}{% endif %}{% if ctrl_page %}&ctrl_page={{ ctrl_page }}{% endif %}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}{% if ap_sort %}&ap_sort={{ ap_sort }}{% endif %}{% if ap_order %}&ap_order={{ ap_order }}{% endif %}{% if ap_page %}&ap_page={{ ap_page }}{% endif %}"
+            >{{ p }}</a
+          >
+          {% elif p == failed_ctrl_page - 3 or p == failed_ctrl_page + 3 %}
+          <span>...</span>
+          {% endif %} {% endfor %} {% if failed_ctrl_page <
+          total_failed_ctrl_pages %}
+          <a
+            href="?failed_ctrl_page={{ failed_ctrl_page + 1 }}{% if ctrl_search %}&ctrl_search={{ ctrl_search }}{% endif %}{% if ctrl_sort %}&ctrl_sort={{ ctrl_sort }}{% endif %}{% if ctrl_order %}&ctrl_order={{ ctrl_order }}{% endif %}{% if ctrl_page %}&ctrl_page={{ ctrl_page }}{% endif %}{% if ap_search %}&ap_search={{ ap_search }}{% endif %}{% if ap_sort %}&ap_sort={{ ap_sort }}{% endif %}{% if ap_order %}&ap_order={{ ap_order }}{% endif %}{% if ap_page %}&ap_page={{ ap_page }}{% endif %}"
+            >Next</a
+          >
+          {% endif %}
+        </div>
+        {% endif %}
       </div>
       {% endif %}
 
